@@ -1,1 +1,1 @@
-Ecommerce.API
+This is a personal project to simmulate the development of the back-end of an e-commerce application with no production intent, I'm using this to hone my existing development skills and stack, and learn new ones in the process.
