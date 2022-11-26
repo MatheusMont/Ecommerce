@@ -1,94 +1,37 @@
-﻿using Ecommerce.DOMAIN.Interfaces.IServices;
+﻿using AutoMapper;
+using Ecommerce.Core.Controller;
+using Ecommerce.Core.Notifications;
+using Ecommerce.DOMAIN.Interfaces.IServices;
 using Ecommerce.DOMAIN.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controllers
 {
-    public class UserController : Controller
+    [Route("api/[Controller]")]
+    public class UserController : BaseController
     {
         private readonly IUserServices _userServices;
+        private readonly INotifier _notifier;
+        private readonly IMapper _mapper;
 
-        public UserController(IUserServices userServices)
+        public UserController(IUserServices userServices,
+                                INotifier notifier,
+                                IMapper mapper) : base(notifier, mapper)
         {
             _userServices = userServices;
+            _notifier = notifier;
+            _mapper = mapper;
         }
 
-        // GET: UserController
-        public ActionResult Index()
+        [HttpGet("User/{id:Guid}")]
+        public async Task<IActionResult> GetUserById([FromHeader] Guid id)
         {
-            var user = new User();
-            _userServices.CreateUser(user);
-            return View();
-        }
+            var user = _userServices.GetUser(id);
 
-        // GET: UserController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: UserController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: UserController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: UserController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: UserController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: UserController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: UserController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return HasError()
+                ? ReturnBadRequest()
+                : Ok();
         }
     }
 }

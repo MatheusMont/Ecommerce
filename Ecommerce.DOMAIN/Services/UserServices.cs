@@ -15,12 +15,12 @@ namespace Ecommerce.DOMAIN.Services
             throw new NotImplementedException();
         }
 
-        public Task DeleteUser(int id)
+        public Task DeleteUser(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public Task GetUser(int id)
+        public Task GetUser(Guid id)
         {
             throw new NotImplementedException();
         }

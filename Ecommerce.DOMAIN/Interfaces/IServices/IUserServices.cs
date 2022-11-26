@@ -10,8 +10,8 @@ namespace Ecommerce.DOMAIN.Interfaces.IServices
     public interface IUserServices
     {
         Task CreateUser(User user);
-        Task GetUser(int id);
+        Task GetUser(Guid id);
         Task UpdateUser(User user);
-        Task DeleteUser(int id);
+        Task DeleteUser(Guid id);
     }
 }
