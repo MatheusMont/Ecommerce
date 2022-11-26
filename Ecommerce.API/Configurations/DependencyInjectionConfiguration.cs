@@ -1,6 +1,6 @@
-﻿using Ecommerce.DOMAIN.Interfaces.IServices;
+﻿using Ecommerce.API.Configurations.Notifications;
+using Ecommerce.DOMAIN.Interfaces.IServices;
 using Ecommerce.DOMAIN.Services;
-using Ecommerce.Core.Notifications;
 
 namespace Ecommerce.API.Configurations
 {

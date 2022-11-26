@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Ecommerce.Core.Controller;
-using Ecommerce.Core.Notifications;
+using Ecommerce.API.Configurations;
+using Ecommerce.API.Configurations.Notifications;
 using Ecommerce.DOMAIN.Interfaces.IServices;
 using Ecommerce.DOMAIN.Models;
 using Microsoft.AspNetCore.Http;
@@ -27,7 +27,7 @@ namespace Ecommerce.API.Controllers
         [HttpGet("User/{id:Guid}")]
         public async Task<IActionResult> GetUserById([FromHeader] Guid id)
         {
-            var user = _userServices.GetUser(id);
+            var user = await _userServices.GetUser(id);
 
             return HasError()
                 ? ReturnBadRequest()

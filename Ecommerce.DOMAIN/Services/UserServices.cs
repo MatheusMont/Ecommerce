@@ -10,9 +10,9 @@ namespace Ecommerce.DOMAIN.Services
 {
     public class UserServices : IUserServices
     {
-        public Task CreateUser(User user)
+        public async Task CreateUser(User user)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         public Task DeleteUser(Guid id)
@@ -20,7 +20,7 @@ namespace Ecommerce.DOMAIN.Services
             throw new NotImplementedException();
         }
 
-        public Task GetUser(Guid id)
+        public async Task<User> GetUser(Guid id)
         {
             throw new NotImplementedException();
         }

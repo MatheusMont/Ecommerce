@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DTOs\Response\" />
     <Folder Include="Interfaces\IRepository\" />
   </ItemGroup>
 
