@@ -8,7 +8,9 @@ namespace Ecommerce.DOMAIN.Models
 {
     public class Base
     {
-        private DateTime CreationDate { get; } = DateTime.Now;
-        private DateTime DeletionDate { get; set; }
+        public Guid Id { get; protected set; }
+        protected DateTime CreationDate { get; } = DateTime.Now;
+        protected DateTime DeletionDate { get; set; }
+        protected DateTime UpdateDate { get; set; }
     }
 }

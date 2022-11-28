@@ -37,6 +37,9 @@ namespace Ecommerce.API.Controllers
         [HttpPost("User/Create")]
         public async Task<IActionResult> CreateUser()
         {
+            var user = new User(Guid.NewGuid(), "name", "password", "email");
+
+
             await _userServices.CreateUser(new User(Guid.NewGuid(), "name", "password", "email"));
 
             return HasError()
