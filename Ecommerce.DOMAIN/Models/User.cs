@@ -13,5 +13,12 @@ namespace Ecommerce.DOMAIN.Models
         public string Password { get; private set; }
         public string Email { get; private set; }
 
+        public User(Guid id, string username, string password, string email)
+        {
+            Id = id;
+            Username = username;
+            Password = password;
+            Email = email;
+        }
     }
 }

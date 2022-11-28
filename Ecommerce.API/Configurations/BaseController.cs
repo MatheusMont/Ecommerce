@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Ecommerce.API.Configurations.Notifications;
+using Ecommerce.DOMAIN.Interfaces.INotifier;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Configurations
