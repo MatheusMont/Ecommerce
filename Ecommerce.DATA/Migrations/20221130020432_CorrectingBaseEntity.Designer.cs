@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ecommerce.DATA.Migrations
 {
     [DbContext(typeof(ECommerceContext))]
-    [Migration("20221129045623_AtualizandoEntity")]
-    partial class AtualizandoEntity
+    [Migration("20221130020432_CorrectingBaseEntity")]
+    partial class CorrectingBaseEntity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,6 +30,12 @@ namespace Ecommerce.DATA.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("DeletionDate")
                         .HasColumnType("timestamp with time zone");

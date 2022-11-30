@@ -50,9 +50,9 @@ namespace Ecommerce.DOMAIN.Services
                 if (await _repository.EmailExists(user.Email))
                     NotifyErrorMessage("Email", "Este email já está cadastrado");
 
-
-                if(validation)
-                await _repository.CreateUser(user);
+                var nots = _notifier.HasNotifications();
+                if(!_notifier.HasNotifications())
+                    await _repository.CreateUser(user);
             }
             catch(Exception e)
             {
@@ -67,12 +67,38 @@ namespace Ecommerce.DOMAIN.Services
 
         public async Task<User> GetUserById(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = await _repository.GetUserById(id);
+
+                if (user == null)
+                    NotifyErrorMessage("Email", "Este email não está cadastrado");
+
+                return user;
+            }
+            catch (Exception e)
+            {
+                NotifyErrorMessage($"{e}", "Ocorreu um erro inesperado, tente novamente mais tarde.");
+                return new User();
+            }
         }
 
         public async Task<User> GetUserByEmail(string email)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = await _repository.GetUserByEmail(email);
+
+                if (user == null)
+                    NotifyErrorMessage("Email", "Este email não está cadastrado");
+
+                return user;
+            }
+            catch (Exception e)
+            {
+                NotifyErrorMessage($"{e}", "Ocorreu um erro inesperado, tente novamente mais tarde.");
+                return new User();
+            }
         }
 
         public Task UpdateUser(User user)

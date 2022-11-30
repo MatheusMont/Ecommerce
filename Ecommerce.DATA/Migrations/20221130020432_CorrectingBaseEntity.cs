@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Ecommerce.DATA.Migrations
 {
     /// <inheritdoc />
-    public partial class Createuser : Migration
+    public partial class CorrectingBaseEntity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,7 +18,11 @@ namespace Ecommerce.DATA.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Username = table.Column<string>(type: "text", nullable: false),
                     Password = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false)
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DeletionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdateDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Active = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {

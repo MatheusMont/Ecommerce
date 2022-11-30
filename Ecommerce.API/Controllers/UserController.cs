@@ -27,14 +27,34 @@ namespace Ecommerce.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetUserById([FromHeader] int id)
+        /// <summary>
+        /// Gets the User by their Id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>An error or the User's public information</returns>
+        [HttpGet("{id:Guid}")]
+        public async Task<IActionResult> GetUserById([FromHeader] Guid id)
         {
-            //var user = await _userServices.GetUserById(id);
+            var user = await _userServices.GetUserById(id);
 
             return HasError()
                 ? ReturnBadRequest()
-                : Ok(new UserResponse());
+                : Ok(_mapper.Map<UserResponse>(user));
+        }
+
+        /// <summary>
+        /// Gets the User by their Id.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>An error or the User's public information</returns>
+        [HttpGet("{email}")]
+        public async Task<IActionResult> GetUserByEmail([FromHeader] string email)
+        {
+            var user = await _userServices.GetUserByEmail(email);
+
+            return HasError()
+                ? ReturnBadRequest()
+                : Ok(_mapper.Map<UserResponse>(user));
         }
 
         /// <summary>
@@ -53,7 +73,8 @@ namespace Ecommerce.API.Controllers
 
             return HasError()
                 ? ReturnBadRequest()
-                : Ok(201);
+                : StatusCode(201, "Created");
         }
+
     }
 }
