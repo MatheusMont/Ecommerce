@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Ecommerce.DOMAIN.DTOs.Request;
+using Ecommerce.DOMAIN.DTOs.Response;
 using Ecommerce.DOMAIN.Models;
 
 namespace Ecommerce.API.Configurations
@@ -8,7 +9,9 @@ namespace Ecommerce.API.Configurations
     {
         public AutoMapperConfiguration()
         {
-            CreateMap<User, RequestUserCreation>();
+            CreateMap<UserCreationRequest, User>();
+            CreateMap<User, UserResponse>();
+            
         }
     }
 }

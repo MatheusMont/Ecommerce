@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Ecommerce.DOMAIN.Models
+{
+    public abstract class Entity
+    {
+        public Guid Id { get; protected set; }
+        public DateTime CreationDate { get; } = DateTime.Now;
+        public DateTime DeletionDate { get; set; }
+        public DateTime UpdateDate { get; set; }
+        public bool Active { get; } = true;
+    }
+}

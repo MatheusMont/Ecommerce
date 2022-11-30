@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Ecommerce.API.Configurations;
+using Ecommerce.DOMAIN.DTOs.Request;
+using Ecommerce.DOMAIN.DTOs.Response;
 using Ecommerce.DOMAIN.Interfaces.INotifier;
 using Ecommerce.DOMAIN.Interfaces.IServices;
 using Ecommerce.DOMAIN.Models;
@@ -8,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controllers
 {
+    [ApiController]
     [Route("api/[Controller]")]
     public class UserController : BaseController
     {
@@ -24,27 +27,33 @@ namespace Ecommerce.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("User/{id:Guid}")]
-        public async Task<IActionResult> GetUserById([FromHeader] Guid id)
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetUserById([FromHeader] int id)
         {
-            var user = await _userServices.GetUser(id);
+            //var user = await _userServices.GetUserById(id);
 
             return HasError()
                 ? ReturnBadRequest()
-                : Ok();
+                : Ok(new UserResponse());
         }
 
-        [HttpPost("User/Create")]
-        public async Task<IActionResult> CreateUser()
+        /// <summary>
+        /// Creates a new User.
+        /// </summary>
+        /// <param name="userDto"></param>
+        /// <returns>A message indicating success or error</returns>
+        /// <response code = "201">Returns a success creation message</response>
+        /// <response code = "400">Returns a user error message</response>
+        [HttpPost("Create")]
+        public async Task<IActionResult> CreateUser(UserCreationRequest userDto)
         {
-            var user = new User(Guid.NewGuid(), "name", "password", "email");
+            var user = _mapper.Map<User>(userDto);
 
-
-            await _userServices.CreateUser(new User(Guid.NewGuid(), "name", "password", "email"));
+            await _userServices.CreateUser(user);
 
             return HasError()
                 ? ReturnBadRequest()
-                : Ok();
+                : Ok(201);
         }
     }
 }

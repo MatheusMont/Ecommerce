@@ -9,16 +9,17 @@ using Ecommerce.DOMAIN.Interfaces.IRepository;
 using Ecommerce.DOMAIN.Interfaces.INotifier;
 using Ecommerce.DOMAIN.Validations;
 using FluentValidation;
+using Ecommerce.DOMAIN.DTOs.Request;
 
 namespace Ecommerce.DOMAIN.Services
 {
-    public class UserServices : IUserServices
+    public class UserServices : BaseService, IUserServices
     {
         private readonly IUserRepository _repository;
         private readonly INotifier _notifier;
         
         public UserServices(INotifier notifier, 
-                            IUserRepository repository)
+                            IUserRepository repository) : base(notifier)
         {
             _repository = repository;
             _notifier = notifier;
@@ -26,19 +27,37 @@ namespace Ecommerce.DOMAIN.Services
 
         public async Task CreateUser(User user)
         {
-            var validator = new UserValidator();
-            var validation = validator.Validate(user);
 
-            if (!validation.IsValid)
+            try
             {
-                foreach(var error in validation.Errors)
+                var validation = ExecuteValidation(new UserValidator(), user);
+                /*
+                if (!validation.IsValid)
                 {
-                    var notification = new Notification(error.AttemptedValue.ToString(), error.ErrorMessage);
-                    _notifier.AddNotification(notification);
+                    foreach (var error in validation.Errors)
+                    {
+                        var notification = new Notification(error.AttemptedValue.ToString(), error.ErrorMessage);
+                        _notifier.AddNotification(notification);
+                    }
                 }
+                */
+
+                if (!validation)
+                    return;
+                
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
+                if (await _repository.EmailExists(user.Email))
+                    NotifyErrorMessage("Email", "Este email já está cadastrado");
+
+
+                if(validation)
+                await _repository.CreateUser(user);
             }
-            
-            await _repository.CreateUser(user);
+            catch(Exception e)
+            {
+                NotifyErrorMessage($"{e}", "Ocorreu um erro inesperado, tente novamente mais tarde.");
+            }
         }
 
         public Task DeleteUser(Guid id)
@@ -46,7 +65,12 @@ namespace Ecommerce.DOMAIN.Services
             throw new NotImplementedException();
         }
 
-        public async Task<User> GetUser(Guid id)
+        public async Task<User> GetUserById(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<User> GetUserByEmail(string email)
         {
             throw new NotImplementedException();
         }

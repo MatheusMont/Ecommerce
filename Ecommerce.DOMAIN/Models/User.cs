@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BCrypt.Net;
 
 namespace Ecommerce.DOMAIN.Models
 {
-    public class User : Base
+    public class User : Entity
     {
-        public string Username { get; private set; }
-        public string Password { get; private set; }
-        public string Email { get; private set; }
-
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string Email { get; set; }
+        /*
         public User(Guid id, string username, string password, string email)
         {
             Id = id;
@@ -19,5 +20,6 @@ namespace Ecommerce.DOMAIN.Models
             Password = password;
             Email = email;
         }
+        */
     }
 }

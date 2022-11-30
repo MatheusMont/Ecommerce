@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Ecommerce.API.Configurations
 {
     [ApiController]
-    [Produces("application/json")]
+    //[Produces("application/json")]
     public abstract class BaseController : ControllerBase
     {
         private readonly INotifier _notifier;

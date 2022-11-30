@@ -37,7 +37,7 @@ namespace Ecommerce.DOMAIN.Validations
 
         protected bool ValidatePassword(string password)
         {
-            var validator = new Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*0-9)(?=.*?[#?!@$%^&*-])");
+            var validator = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{0,}$");
 
             if (!validator.IsMatch(password)) return false;
 
