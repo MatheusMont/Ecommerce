@@ -76,5 +76,37 @@ namespace Ecommerce.API.Controllers
                 : StatusCode(201, "Created");
         }
 
+        /// <summary>
+        /// Gets the User by their Id.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>An error or the User's public information</returns>
+        [HttpPut("Update/{id:Guid}")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserCreationRequest userDto, [FromHeader] Guid id)
+        {
+            var user = _mapper.Map<User>(userDto);
+
+            await _userServices.UpdateUser(user, id);
+
+            return HasError()
+                ? ReturnBadRequest()
+                : Ok("Usuário atualizado com sucesso");
+        }
+
+        /// <summary>
+        /// Gets the User by their Id.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns>An error or the confirmation of the User's deletion</returns>
+        [HttpDelete("Delete/{id:Guid}")]
+        public async Task<IActionResult> DeleteUser([FromHeader] Guid id)
+        {
+            await _userServices.DeleteUser(id);
+
+            return HasError()
+                ? ReturnBadRequest()
+                : Ok("Usuário deletado com sucesso");
+        }
+
     }
 }

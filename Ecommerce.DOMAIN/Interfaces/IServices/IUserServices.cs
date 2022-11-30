@@ -14,7 +14,7 @@ namespace Ecommerce.DOMAIN.Interfaces.IServices
         Task CreateUser(User user);
         Task<User> GetUserById(Guid id);
         Task<User> GetUserByEmail(string email);
-        Task UpdateUser(User user);
+        Task UpdateUser(User user, Guid id);
         Task DeleteUser(Guid id);
     }
 }

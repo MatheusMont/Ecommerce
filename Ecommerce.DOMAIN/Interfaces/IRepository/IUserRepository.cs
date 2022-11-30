@@ -13,5 +13,7 @@ namespace Ecommerce.DOMAIN.Interfaces.IRepository
         Task<bool> EmailExists(string email);
         Task<User> GetUserById(Guid id);
         Task<User> GetUserByEmail(string email);
+        Task UpdateUser(User user, Guid id);
+        Task DeleteUser(Guid id);
     }
 }

@@ -31,16 +31,6 @@ namespace Ecommerce.DOMAIN.Services
             try
             {
                 var validation = ExecuteValidation(new UserValidator(), user);
-                /*
-                if (!validation.IsValid)
-                {
-                    foreach (var error in validation.Errors)
-                    {
-                        var notification = new Notification(error.AttemptedValue.ToString(), error.ErrorMessage);
-                        _notifier.AddNotification(notification);
-                    }
-                }
-                */
 
                 if (!validation)
                     return;
@@ -58,11 +48,6 @@ namespace Ecommerce.DOMAIN.Services
             {
                 NotifyErrorMessage($"{e}", "Ocorreu um erro inesperado, tente novamente mais tarde.");
             }
-        }
-
-        public Task DeleteUser(Guid id)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<User> GetUserById(Guid id)
@@ -101,9 +86,35 @@ namespace Ecommerce.DOMAIN.Services
             }
         }
 
-        public Task UpdateUser(User user)
+        public async Task UpdateUser(User user, Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var validation = ExecuteValidation(new UserValidator(), user);
+
+                if (!validation)
+                    return;
+
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
+                await _repository.UpdateUser(user, id);
+            }
+            catch(Exception e)
+            {
+                NotifyErrorMessage($"{e}", "Ocorreu um erro inesperado, tente novamente mais tarde");
+            }
+        }
+
+        public async Task DeleteUser(Guid id)
+        {
+            try
+            {
+                await _repository.DeleteUser(id);
+            }
+            catch (Exception e)
+            {
+                NotifyErrorMessage($"{e}", "Ocorreu um erro inesperado, tente novamente mais tarde");
+            }
         }
     }
 }
