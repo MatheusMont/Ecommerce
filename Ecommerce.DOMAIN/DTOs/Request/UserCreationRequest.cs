@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BCrypt.Net;
 
-namespace Ecommerce.DOMAIN.Models
+namespace Ecommerce.DOMAIN.DTOs.Request
 {
-    public class User : Entity
+    public class UserCreationRequest
     {
         public string Username { get; set; }
         public string Password { get; set; }

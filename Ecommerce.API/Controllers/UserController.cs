@@ -1,94 +1,112 @@
-﻿using Ecommerce.DOMAIN.Interfaces.IServices;
+﻿using AutoMapper;
+using Ecommerce.API.Configurations;
+using Ecommerce.DOMAIN.DTOs.Request;
+using Ecommerce.DOMAIN.DTOs.Response;
+using Ecommerce.DOMAIN.Interfaces.INotifier;
+using Ecommerce.DOMAIN.Interfaces.IServices;
 using Ecommerce.DOMAIN.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controllers
 {
-    public class UserController : Controller
+    [ApiController]
+    [Route("api/[Controller]")]
+    public class UserController : BaseController
     {
         private readonly IUserServices _userServices;
+        private readonly INotifier _notifier;
+        private readonly IMapper _mapper;
 
-        public UserController(IUserServices userServices)
+        public UserController(IUserServices userServices,
+                                INotifier notifier,
+                                IMapper mapper) : base(notifier, mapper)
         {
             _userServices = userServices;
+            _notifier = notifier;
+            _mapper = mapper;
         }
 
-        // GET: UserController
-        public ActionResult Index()
+        /// <summary>
+        /// Gets the User by their Id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>An error or the User's public information</returns>
+        [HttpGet("{id:Guid}")]
+        public async Task<IActionResult> GetUserById([FromHeader] Guid id)
         {
-            var user = new User();
-            _userServices.CreateUser(user);
-            return View();
+            var user = await _userServices.GetUserById(id);
+
+            return HasError()
+                ? ReturnBadRequest()
+                : Ok(_mapper.Map<UserResponse>(user));
         }
 
-        // GET: UserController/Details/5
-        public ActionResult Details(int id)
+        /// <summary>
+        /// Gets the User by their Id.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>An error or the User's public information</returns>
+        [HttpGet("{email}")]
+        public async Task<IActionResult> GetUserByEmail([FromHeader] string email)
         {
-            return View();
+            var user = await _userServices.GetUserByEmail(email);
+
+            return HasError()
+                ? ReturnBadRequest()
+                : Ok(_mapper.Map<UserResponse>(user));
         }
 
-        // GET: UserController/Create
-        public ActionResult Create()
+        /// <summary>
+        /// Creates a new User.
+        /// </summary>
+        /// <param name="userDto"></param>
+        /// <returns>A message indicating success or error</returns>
+        /// <response code = "201">Returns a success creation message</response>
+        /// <response code = "400">Returns a user error message</response>
+        [HttpPost("Create")]
+        public async Task<IActionResult> CreateUser(UserCreationRequest userDto)
         {
-            return View();
+            var user = _mapper.Map<User>(userDto);
+
+            await _userServices.CreateUser(user);
+
+            return HasError()
+                ? ReturnBadRequest()
+                : StatusCode(201, "Created");
         }
 
-        // POST: UserController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        /// <summary>
+        /// Gets the User by their Id.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>An error or the User's public information</returns>
+        [HttpPut("Update/{id:Guid}")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserCreationRequest userDto, [FromHeader] Guid id)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            var user = _mapper.Map<User>(userDto);
+
+            await _userServices.UpdateUser(user, id);
+
+            return HasError()
+                ? ReturnBadRequest()
+                : Ok("Usuário atualizado com sucesso");
         }
 
-        // GET: UserController/Edit/5
-        public ActionResult Edit(int id)
+        /// <summary>
+        /// Gets the User by their Id.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns>An error or the confirmation of the User's deletion</returns>
+        [HttpDelete("Delete/{id:Guid}")]
+        public async Task<IActionResult> DeleteUser([FromHeader] Guid id)
         {
-            return View();
+            await _userServices.DeleteUser(id);
+
+            return HasError()
+                ? ReturnBadRequest()
+                : Ok("Usuário deletado com sucesso");
         }
 
-        // POST: UserController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: UserController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: UserController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }
