@@ -22,7 +22,6 @@ namespace Ecommerce.DATA.Repositories
         {
             await _context.AddAsync(user);
             _context.SaveChanges();
-            
         }
 
         public async Task<bool> EmailExists(string email)
@@ -48,7 +47,7 @@ namespace Ecommerce.DATA.Repositories
             result.Email = user.Email;
             result.UpdateDate = DateTime.UtcNow;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteUser(Guid id)

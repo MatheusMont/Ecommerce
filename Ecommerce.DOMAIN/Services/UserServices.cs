@@ -57,7 +57,7 @@ namespace Ecommerce.DOMAIN.Services
                 var user = await _repository.GetUserById(id);
 
                 if (user == null)
-                    NotifyErrorMessage("Email", "Este email não está cadastrado");
+                    NotifyErrorMessage("Email", "Este ID não está cadastrado");
 
                 return user;
             }

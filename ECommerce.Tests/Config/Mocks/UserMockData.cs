@@ -23,6 +23,7 @@ namespace ECommerce.Tests.Config.Mocks
 
 
                     var user1 = new User();
+                   
                     user1.Username = "Username1";
                     user1.Password = BCrypt.Net.BCrypt.HashPassword("User1ValidPassword");
                     user1.Email = "user1@mail.com";
@@ -39,6 +40,19 @@ namespace ECommerce.Tests.Config.Mocks
                         await userDbContext.Users.AddAsync(user2);
                         await userDbContext.SaveChangesAsync();
                     }
+                }
+            }
+        }
+
+        public static async Task<List<Guid>> GetUsersId(DatabaseApiApplication application)
+        {
+            using (var scope = application.Services.CreateScope())
+            {
+                var provider = scope.ServiceProvider;
+
+                using (var userDbContext = provider.GetRequiredService<ECommerceContext>())
+                {
+                    return userDbContext.Users.Select(u => u.Id).ToList();
                 }
             }
         }
