@@ -83,11 +83,24 @@ namespace Ecommerce.API.Controllers
         /// <param name="email"></param>
         /// <returns>An error or the User's public information</returns>
         [HttpPut("Update/{id:Guid}")]
-        public async Task<IActionResult> UpdateUser([FromBody] UserCreationRequest userDto, Guid id)
+        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateRequest userDto, Guid id)
         {
             var user = _mapper.Map<User>(userDto);
 
             await _userServices.UpdateUser(user, id);
+
+            return HasError()
+                ? ReturnBadRequest()
+                : Ok("Usuário atualizado com sucesso");
+        }
+
+        [HttpPut("Update/ChangePassword/{id:Guid}")]
+        public async Task<IActionResult> ChangePassword([FromBody] string password, Guid id)
+        {
+
+            var userDto = new UserCreationRequest("UsernamePlaceHolder", password, "email@placeholder.com");
+            var user = _mapper.Map<User>(userDto);
+            await _userServices.ChangePassword(user, id);
 
             return HasError()
                 ? ReturnBadRequest()

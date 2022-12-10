@@ -23,7 +23,9 @@ namespace ECommerce.Tests.Config
             {
                 services.RemoveAll(typeof(DbContextOptions<ECommerceContext>));
                 services.AddDbContext<ECommerceContext>(options =>
-                    options.UseInMemoryDatabase("ECommerceDatabase", root));
+                    options
+                        .EnableServiceProviderCaching(false)
+                        .UseInMemoryDatabase("ECommerceDatabase", root));
             });
 
             return base.CreateHost(builder);

@@ -46,6 +46,8 @@ namespace ECommerce.Tests.IntegrationTests
             var serializedResult = JsonConvert.DeserializeObject<UserResponse>(resultContent);
             var actualResponse = JsonConvert.SerializeObject(serializedResult);
 
+            await application.DisposeAsync();
+
             //Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Equal(expectedJson, actualResponse);
@@ -67,6 +69,8 @@ namespace ECommerce.Tests.IntegrationTests
             //Act
             var result = await client.GetAsync(url);
             var resultContent = result.Content.ReadAsStringAsync().Result;
+
+            await application.DisposeAsync();
 
             //Assert
             Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
@@ -96,6 +100,8 @@ namespace ECommerce.Tests.IntegrationTests
             var serializedResult = JsonConvert.DeserializeObject<UserResponse>(resultContent);
             var actualResponse = JsonConvert.SerializeObject(serializedResult);
 
+            await application.DisposeAsync();
+
             //Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Equal(expectedJson, actualResponse);
@@ -119,6 +125,8 @@ namespace ECommerce.Tests.IntegrationTests
             var resultContent = result.Content.ReadAsStringAsync().Result;
             var serializedResult = JsonConvert.DeserializeObject<UserResponse>(resultContent);
             var actualResponse = JsonConvert.SerializeObject(serializedResult);
+
+            await application.DisposeAsync();
 
             //Assert
             Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
@@ -148,6 +156,8 @@ namespace ECommerce.Tests.IntegrationTests
 
             //Act
             var result = await client.PostAsync(request.RequestUri, request.Content);
+
+            await application.DisposeAsync();
 
             //Assert
             Assert.Equal(HttpStatusCode.Created, result.StatusCode);
@@ -185,15 +195,17 @@ namespace ECommerce.Tests.IntegrationTests
             //Act
             var result = await client.PostAsync(request.RequestUri, request.Content);
 
+            await application.DisposeAsync();
+
             //Assert
             Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
         [Theory]
-        [InlineData("Valid Username", "invalidpassword", "user3@mail.com")]
-        [InlineData("Valid Username", "ValidPassword1", "invalidemail")]
-        [InlineData("Valid Username", "invalidpassword", "user1@mail.com")]
-        public async Task PUT_Update_New_User_BadRequest(string username, string password, string email)
+        [InlineData("Valid Username","@mail.com")]
+        [InlineData("Valid Username","invalidemail")]
+        [InlineData("Valid Username","user1@@mail.com")]
+        public async Task PUT_Update_User_BadRequest(string username,string email)
         {
             //Arrange
             await using var application = new DatabaseApiApplication();
@@ -202,7 +214,7 @@ namespace ECommerce.Tests.IntegrationTests
 
             var usersId = await UserMockData.GetUsersId(application);
             
-            var registerUser = new UserCreationRequest(username, password, email);
+            var registerUser = new UserUpdateRequest(username, email);
             var url = $"/api/User/Update/{usersId[0]}";
             var request = new HttpRequestMessage(HttpMethod.Put, url);
 
@@ -210,7 +222,6 @@ namespace ECommerce.Tests.IntegrationTests
             {
                 username = registerUser.Username,
                 email = registerUser.Email,
-                password = registerUser.Password
             });
 
             var client = application.CreateClient();
@@ -219,12 +230,14 @@ namespace ECommerce.Tests.IntegrationTests
             //Act
             var result = await client.PutAsync(request.RequestUri, request.Content);
 
+            await application.DisposeAsync();
+
             //Assert
             Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
         [Fact]
-        public async Task PUT_Update_New_User_Success()
+        public async Task PUT_Update_User_Success()
         {
             //Arrange
             await using var application = new DatabaseApiApplication();
@@ -236,7 +249,7 @@ namespace ECommerce.Tests.IntegrationTests
             var expectedUser = new UserResponse("changedUsername", "changed@mail.com");
             var expectedJson = JsonConvert.SerializeObject(expectedUser);
 
-            var registerUser = new UserCreationRequest("changedUsername", "changedPassword1", "changed@mail.com");
+            var registerUser = new UserUpdateRequest("changedUsername", "changed@mail.com");
 
             var url = $"/api/User/Update/{usersId[0]}";
             var confirmUrl = $"/api/User/{usersId[0]}";
@@ -248,7 +261,6 @@ namespace ECommerce.Tests.IntegrationTests
             {
                 username = registerUser.Username,
                 email = registerUser.Email,
-                password = registerUser.Password
             });
 
             var client = application.CreateClient();
@@ -262,11 +274,80 @@ namespace ECommerce.Tests.IntegrationTests
             var serializedResult = JsonConvert.DeserializeObject<UserResponse>(resultContent);
             var actualResponse = JsonConvert.SerializeObject(serializedResult);
 
+            await application.DisposeAsync();
 
             //Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Equal(HttpStatusCode.OK, confirmResult.StatusCode);
             Assert.Equal(expectedJson, actualResponse);
+
+
+        }
+
+        [Fact]
+        public async Task PUT_Change_Password_Success()
+        {
+            //Arrange
+            await using var application = new DatabaseApiApplication();
+
+            await UserMockData.CreateUsers(application, true);
+
+            var usersId = await UserMockData.GetUsersId(application);
+
+            var validPassword = "ValidPassword1";
+
+            var url = $"/api/User/Update/ChangePassword/{usersId[0]}";
+
+            var request = new HttpRequestMessage(HttpMethod.Put, url);
+
+
+
+            request.Content = JsonContent.Create(validPassword);
+
+            var client = application.CreateClient();
+
+
+            //Act
+            var result = await client.PutAsync(request.RequestUri, request.Content);
+
+            await application.DisposeAsync();
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        }
+
+        [Theory]
+        [InlineData("short")]
+        [InlineData("nouppercase1")]
+        [InlineData("NOLOWERCASE1")]
+        [InlineData("NoNumberPassword")]
+        public async Task PUT_Change_Password_Fail(string password)
+        {
+            //Arrange
+            await using var application = new DatabaseApiApplication();
+
+            await UserMockData.CreateUsers(application, true);
+
+            var usersId = await UserMockData.GetUsersId(application);
+
+            var url = $"/api/User/Update/ChangePassword/{usersId[0]}";
+
+            var request = new HttpRequestMessage(HttpMethod.Put, url);
+
+
+
+            request.Content = JsonContent.Create(password);
+
+            var client = application.CreateClient();
+
+
+            //Act
+            var result = await client.PutAsync(request.RequestUri, request.Content);
+
+            await application.DisposeAsync();
+
+            //Assert
+            Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
         [Fact]
@@ -292,6 +373,7 @@ namespace ECommerce.Tests.IntegrationTests
 
             var confirmResult = await client.GetAsync(confirmUrl);
 
+            await application.DisposeAsync();
 
             //Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
@@ -317,6 +399,8 @@ namespace ECommerce.Tests.IntegrationTests
 
             //Act
             var result = await client.DeleteAsync(request.RequestUri);
+
+            await application.DisposeAsync();
 
             //Assert
             Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);

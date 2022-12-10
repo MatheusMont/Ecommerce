@@ -35,6 +35,19 @@ namespace Ecommerce.DOMAIN.Validations
 
         }
 
+        public UserValidator(string pass)
+        {
+            RuleFor(u => u.Password)
+               .NotEmpty()
+               .WithMessage("{PropertyName} must be included")
+               .MinimumLength(8)
+               .WithMessage("{PropertyName} must have a minimum of 8 characters")
+               .MaximumLength(100)
+               .WithMessage("{PropertyName} must have a maximum of 100 characters")
+               .Must(ValidatePassword)
+               .WithMessage("{PropertyName} must contain an upper case letter, a lower case letter, a number and a symbol [#, ?, !, @, $, %, ^, &, *, -]");
+        }
+
         protected bool ValidatePassword(string password)
         {
             var validator = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{0,}$");

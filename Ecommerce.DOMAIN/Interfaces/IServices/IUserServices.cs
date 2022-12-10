@@ -16,5 +16,6 @@ namespace Ecommerce.DOMAIN.Interfaces.IServices
         Task<User> GetUserByEmail(string email);
         Task UpdateUser(User user, Guid id);
         Task DeleteUser(Guid id);
+        Task ChangePassword(User user, Guid id);
     }
 }

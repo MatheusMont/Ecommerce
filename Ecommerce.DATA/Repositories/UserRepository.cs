@@ -9,19 +9,13 @@ using System.Threading.Tasks;
 
 namespace Ecommerce.DATA.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : BaseRepository<User>, IUserRepository
     {
         private readonly ECommerceContext _context;
 
-        public UserRepository(ECommerceContext context)
+        public UserRepository(ECommerceContext context) : base(context)
         {
             _context = context;
-        }
-
-        public async Task CreateUser(User user)
-        {
-            await _context.AddAsync(user);
-            _context.SaveChanges();
         }
 
         public async Task<bool> EmailExists(string email)
@@ -29,35 +23,9 @@ namespace Ecommerce.DATA.Repositories
             return _context.Users.Any(u => u.Email == email && u.Active == true);
         }
 
-        public async Task<User> GetUserById(Guid id)
-        {
-            return _context.Users.FirstOrDefault(u => u.Id == id && u.Active == true);
-        }
         public async Task<User> GetUserByEmail(string email)
         {
             return _context.Users.First(u => u.Email == email && u.Active == true);
-        }
-
-        public async Task UpdateUser(User user, Guid id)
-        {
-            var result = _context.Users.First(u => u.Id == id && u.Active == true);
-
-            result.Password = user.Password;
-            result.Username = user.Username;
-            result.Email = user.Email;
-            result.UpdateDate = DateTime.UtcNow;
-
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteUser(Guid id)
-        {
-            var result = _context.Users.First(u => u.Id == id && u.Active == true);
-
-            result.Active = false;
-            result.DeletionDate = DateTime.UtcNow;
-
-            _context.SaveChanges();
         }
     }
 }

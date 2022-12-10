@@ -10,6 +10,7 @@ namespace Ecommerce.API.Configurations
         public AutoMapperConfiguration()
         {
             CreateMap<UserCreationRequest, User>();
+            CreateMap<UserUpdateRequest, User>();
             CreateMap<User, UserResponse>();
             
         }
