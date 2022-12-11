@@ -40,9 +40,12 @@ namespace Ecommerce.DOMAIN.Services
                 if (await _repository.EmailExists(user.Email))
                     NotifyErrorMessage("Email", "Este email já está cadastrado");
 
-                var nots = _notifier.HasNotifications();
-                if(!_notifier.HasNotifications())
-                    await _repository.CreateUser(user);
+                if (!_notifier.HasNotifications())
+                {
+                    await _repository.Create(user);
+                    await _repository.Save();
+                }
+                    
             }
             catch(Exception e)
             {
@@ -54,10 +57,10 @@ namespace Ecommerce.DOMAIN.Services
         {
             try
             {
-                var user = await _repository.GetUserById(id);
+                var user = await _repository.GetById(id);
 
                 if (user == null)
-                    NotifyErrorMessage("Email", "Este email não está cadastrado");
+                    NotifyErrorMessage("Email", "Este ID não está cadastrado");
 
                 return user;
             }
@@ -90,14 +93,19 @@ namespace Ecommerce.DOMAIN.Services
         {
             try
             {
+                user.Password = "ValidUserPassword2@";
                 var validation = ExecuteValidation(new UserValidator(), user);
 
                 if (!validation)
                     return;
 
-                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                var updateUser = await _repository.GetById(id);
 
-                await _repository.UpdateUser(user, id);
+                updateUser.Email = user.Email;
+                updateUser.Username = user.Username;
+
+                _repository.Update(updateUser);
+                await _repository.Save();
             }
             catch(Exception e)
             {
@@ -109,7 +117,30 @@ namespace Ecommerce.DOMAIN.Services
         {
             try
             {
-                await _repository.DeleteUser(id);
+                await _repository.Delete(id);
+                await _repository.Save();
+            }
+            catch (Exception e)
+            {
+                NotifyErrorMessage($"{e}", "Ocorreu um erro inesperado, tente novamente mais tarde");
+            }
+        }
+
+        public async Task ChangePassword(User user, Guid id)
+        {
+            try
+            {
+                var validation = ExecuteValidation(new UserValidator(), user);
+
+                if (!validation)
+                    return;
+
+                var updateUser = await _repository.GetById(id);
+
+                updateUser.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
+                _repository.Update(updateUser);
+                await _repository.Save();
             }
             catch (Exception e)
             {

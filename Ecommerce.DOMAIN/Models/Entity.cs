@@ -8,7 +8,7 @@ namespace Ecommerce.DOMAIN.Models
 {
     public abstract class Entity
     {
-        public Guid Id { get; protected set; }
+        public virtual Guid Id { get; protected set; }
         public DateTime CreationDate { get; protected set; } = DateTime.UtcNow;
         public DateTime DeletionDate { get; set; }
         public DateTime UpdateDate { get; set; }

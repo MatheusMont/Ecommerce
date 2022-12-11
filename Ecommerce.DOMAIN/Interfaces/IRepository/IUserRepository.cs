@@ -7,13 +7,9 @@ using System.Threading.Tasks;
 
 namespace Ecommerce.DOMAIN.Interfaces.IRepository
 {
-    public interface IUserRepository
+    public interface IUserRepository : IBaseRepository<User>
     {
-        Task CreateUser(User user);
         Task<bool> EmailExists(string email);
-        Task<User> GetUserById(Guid id);
         Task<User> GetUserByEmail(string email);
-        Task UpdateUser(User user, Guid id);
-        Task DeleteUser(Guid id);
     }
 }

@@ -3,6 +3,7 @@ using Ecommerce.API.Configurations;
 using Ecommerce.DOMAIN.DTOs.Request;
 using Ecommerce.DOMAIN.DTOs.Response;
 using Ecommerce.DOMAIN.Interfaces.INotifier;
+using Ecommerce.DOMAIN.Interfaces.IRepository;
 using Ecommerce.DOMAIN.Interfaces.IServices;
 using Ecommerce.DOMAIN.Models;
 using Microsoft.AspNetCore.Http;
@@ -32,8 +33,8 @@ namespace Ecommerce.API.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns>An error or the User's public information</returns>
-        [HttpGet("{id:Guid}")]
-        public async Task<IActionResult> GetUserById([FromHeader] Guid id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetUserById(Guid id)
         {
             var user = await _userServices.GetUserById(id);
 
@@ -48,7 +49,7 @@ namespace Ecommerce.API.Controllers
         /// <param name="email"></param>
         /// <returns>An error or the User's public information</returns>
         [HttpGet("{email}")]
-        public async Task<IActionResult> GetUserByEmail([FromHeader] string email)
+        public async Task<IActionResult> GetUserByEmail(string email)
         {
             var user = await _userServices.GetUserByEmail(email);
 
@@ -82,11 +83,24 @@ namespace Ecommerce.API.Controllers
         /// <param name="email"></param>
         /// <returns>An error or the User's public information</returns>
         [HttpPut("Update/{id:Guid}")]
-        public async Task<IActionResult> UpdateUser([FromBody] UserCreationRequest userDto, [FromHeader] Guid id)
+        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateRequest userDto, Guid id)
         {
             var user = _mapper.Map<User>(userDto);
 
             await _userServices.UpdateUser(user, id);
+
+            return HasError()
+                ? ReturnBadRequest()
+                : Ok("Usuário atualizado com sucesso");
+        }
+
+        [HttpPut("Update/ChangePassword/{id:Guid}")]
+        public async Task<IActionResult> ChangePassword([FromBody] string password, Guid id)
+        {
+
+            var userDto = new UserCreationRequest("UsernamePlaceHolder", password, "email@placeholder.com");
+            var user = _mapper.Map<User>(userDto);
+            await _userServices.ChangePassword(user, id);
 
             return HasError()
                 ? ReturnBadRequest()
@@ -99,7 +113,7 @@ namespace Ecommerce.API.Controllers
         /// <param name="Id"></param>
         /// <returns>An error or the confirmation of the User's deletion</returns>
         [HttpDelete("Delete/{id:Guid}")]
-        public async Task<IActionResult> DeleteUser([FromHeader] Guid id)
+        public async Task<IActionResult> DeleteUser(Guid id)
         {
             await _userServices.DeleteUser(id);
 

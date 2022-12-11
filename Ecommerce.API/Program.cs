@@ -1,6 +1,7 @@
 using Ecommerce.API.Configurations;
 using Ecommerce.DATA.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ECommerceContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnection")));
+    options
+        .UseNpgsql(builder.Configuration.GetConnectionString("DbConnection"))
+    );
 
 builder.Services.ResolveDependencies();
 
@@ -38,3 +41,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { };
